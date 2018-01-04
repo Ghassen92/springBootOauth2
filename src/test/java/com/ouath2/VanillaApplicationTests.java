@@ -1,4 +1,4 @@
-package com.github.arocketman;
+package com.ouath2;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;

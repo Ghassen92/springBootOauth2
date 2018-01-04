@@ -1,4 +1,4 @@
-package com.github.arocketman.entities;
+package com.ouath2.entities;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;

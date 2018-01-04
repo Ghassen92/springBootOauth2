@@ -1,10 +1,11 @@
-package com.github.arocketman.config;
+package com.ouath2.config;
 
-import com.github.arocketman.entities.Role;
-import com.github.arocketman.entities.User;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+
+import com.ouath2.entities.Role;
+import com.ouath2.entities.User;
 
 import java.util.ArrayList;
 import java.util.Collection;

@@ -1,14 +1,18 @@
-package com.github.arocketman.config;
+package com.ouath2.config;
+
+import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.config.annotation.configurers.ClientDetailsServiceConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerConfigurerAdapter;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerEndpointsConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerSecurityConfigurer;
+import org.springframework.security.oauth2.provider.token.TokenStore;
+import org.springframework.security.oauth2.provider.token.store.JdbcTokenStore;
 
 /**
  * Configures the authorization server.
@@ -19,11 +23,25 @@ import org.springframework.security.oauth2.config.annotation.web.configurers.Aut
 @EnableAuthorizationServer
 public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdapter {
 
-    @Autowired
+    private static final int RefreshTokenValiditySeconds = 10000;
+	private static final int AccessTokenValiditySeconds = 1000;
+	private static final String CLIENT_SECRET = "secret";
+	private static final String CLIENT_ID = "my-trusted-client";
+	
+	@Autowired
     private AuthenticationManager authenticationManager;
 
+	@Autowired
+	DataSource dataSource;
+	
+    @Bean
+    public TokenStore tokenStore() {
+//        return new InMemoryTokenStore();
+    	return new JdbcTokenStore(dataSource);
+    }
+    
     @Autowired
-    private PasswordEncoder passwordEncoder;
+    private TokenStore tokenStore;
 
     /**
      * Setting up the endpointsconfigurer authentication manager.
@@ -33,7 +51,7 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
      */
     @Override
     public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
-        endpoints.authenticationManager(authenticationManager);
+        endpoints.authenticationManager(authenticationManager).tokenStore(tokenStore);
     }
 
     /**
@@ -43,10 +61,13 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
      */
     @Override
     public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
-        clients.inMemory().withClient("my-trusted-client")
-                .authorizedGrantTypes("client_credentials", "password")
+        clients.inMemory().withClient(CLIENT_ID)
+                .authorizedGrantTypes("client_credentials", "password","refresh_token")
                 .authorities("ROLE_CLIENT","ROLE_TRUSTED_CLIENT").scopes("read","write","trust")
-                .resourceIds("oauth2-resource").accessTokenValiditySeconds(5000).secret("secret");
+                .resourceIds("oauth2-resource")
+                .accessTokenValiditySeconds(AccessTokenValiditySeconds)
+                .secret(CLIENT_SECRET)
+                .refreshTokenValiditySeconds(RefreshTokenValiditySeconds);
     }
 
     /**

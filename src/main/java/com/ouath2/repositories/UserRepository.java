@@ -1,7 +1,8 @@
-package com.github.arocketman.repositories;
+package com.ouath2.repositories;
 
-import com.github.arocketman.entities.User;
 import org.springframework.data.jpa.repository.JpaRepository;
+
+import com.ouath2.entities.User;
 
 /**
  * User repository for CRUD operations.

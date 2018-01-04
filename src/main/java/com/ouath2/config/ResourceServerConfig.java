@@ -1,4 +1,4 @@
-package com.github.arocketman.config;
+package com.ouath2.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -18,7 +18,7 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
         http.headers().frameOptions().disable().and()
                 .authorizeRequests()
                 .antMatchers("/","/home","/register","/login").permitAll()
-                .antMatchers("/private/**").authenticated();
+                .anyRequest().authenticated();
     }
 
 
